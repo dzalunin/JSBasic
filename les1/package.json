@@ -1,0 +1,23 @@
+{
+    "name": "srv",
+    "version": "1.0.1",
+    "description": "js http server",
+    "main": "srv.js",
+    "dependencies": {
+        "npm": "^6.14.11"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "test": "ping"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/dzalunin/JSBasic.git"
+    },
+    "author": "Zalunin Dmitry",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/dzalunin/JSBasic/issues"
+    },
+    "homepage": "https://github.com/dzalunin/JSBasic#readme"
+}
