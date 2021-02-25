@@ -1,0 +1,32 @@
+[
+    {
+        "id": 1,
+        "name": "Товар 1",
+        "price": 1000,
+        "img": "img/products_image_1.jpg"
+    },
+    {
+        "id": 2,
+        "name": "Товар 2",
+        "price": 1050,
+        "img": "img/products_image_2.jpg"
+    },
+    {
+        "id": 3,
+        "name": "Товар 3",
+        "price": 1300,
+        "img": "img/products_image_3.jpg"
+    },
+    {
+        "id": 4,
+        "name": "Товар 4",
+        "price": 2200,
+        "img": "img/products_image_4.jpg"
+    },
+    {
+        "id": 5,
+        "name": "Товар 5",
+        "price": 800,
+        "img": "img/products_image_5.jpg"
+    }
+]
