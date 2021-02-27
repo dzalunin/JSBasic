@@ -1,36 +1,36 @@
 {
-"page": 1,
+"page": 2,
 "totalPages": 3,
 "_embedded":
 	[
 		{
-			"id": 1,
-			"name": "Товар 1",
-			"price": 1000,
+			"id": 6,
+			"name": "Товар 6",
+			"price": 2000,
 			"img": "img/products_image_1.jpg"
 		},
 		{
-			"id": 2,
-			"name": "Товар 2",
-			"price": 1050,
+			"id": 7,
+			"name": "Товар 7",
+			"price": 1150,
 			"img": "img/products_image_1.jpg"
 		},
 		{
-			"id": 3,
-			"name": "Товар 3",
+			"id": 8,
+			"name": "Товар 8",
 			"price": 1300,
 			"img": "img/products_image_1.jpg"
 		},
 		{
-			"id": 4,
-			"name": "Товар 4",
+			"id": 9,
+			"name": "Товар 9",
 			"price": 2200,
 			"img": "img/products_image_1.jpg"
 		},
 		{
-			"id": 5,
-			"name": "Товар 5",
-			"price": 800,
+			"id": 10,
+			"name": "Товар 10",
+			"price": 2800,
 			"img": "img/products_image_1.jpg"
 		}
 	]
