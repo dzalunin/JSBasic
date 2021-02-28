@@ -1,10 +1,8 @@
-
-
-
 class AbstractList {
     _items = {}
     _page = 0
     _totalPages = 1
+    _dataHost = 'http://localhost:40000'
 
     clear() {
         this._items = {}
@@ -18,16 +16,62 @@ class AbstractList {
 
 
 class Product {
+    _ProductListInstance = null
     _id = 0
     _name = ''
     _price = 0
     _img = ''
 
-    constructor({ id, name, price, img }) {
+    constructor(ProductListInstance, { id, name, price, img }) {
+        this._ProductListInstance = ProductListInstance
         this._id = id
         this._name = name
         this._price = price
         this._img = img
+    }
+
+    id() {
+        return this._id
+    }
+
+    price() {
+        return this._price
+    }
+
+    name() {
+        return this._name
+    }
+
+    render(placeToRender) {
+
+        const cell = document.createElement('div')
+        cell.setAttribute('class', 'product-item')
+        placeToRender.appendChild(cell)
+
+        const img = document.createElement('img')
+        img.setAttribute("src", this._img);
+        img.setAttribute('class', 'product-img-top')
+        cell.appendChild(img)
+
+        const title = document.createElement('p')
+        title.setAttribute('class', 'product-title')
+        title.innerHTML = this._name
+        cell.appendChild(title)
+
+        const price = document.createElement('p')
+        price.setAttribute('class', 'product-text')
+        price.innerHTML = `Цена: ${this._price}`
+        cell.appendChild(price)
+
+        const btnAddToCart = document.createElement('button')
+        btnAddToCart.setAttribute('class', 'btn-primary')
+        btnAddToCart.innerHTML = 'Добавить в корзину'
+        cell.appendChild(btnAddToCart)
+
+        btnAddToCart.addEventListener('click', () => {
+            this._ProductListInstance.addItemToCart(this)
+        })
+
     }
 
 }
@@ -35,19 +79,17 @@ class Product {
 
 class CartItem {
     _CartInstance = null
-    _lineId = 0
     _productId = 0
     _productName = ''
     _price = 0
-    _quantity = 0
+    _quantity = 1
     _amount = 0
 
-    constructor(CartInstance, { lineId, productId, price, quantity }) {
+    constructor(CartInstance, productId, productName, price) {
         this._CartInstance = CartInstance
-        this._lineId = lineId
         this._productId = productId
+        this._productName = productName
         this._price = price
-        this._quantity = quantity
 
         this._onChange()
     }
@@ -57,19 +99,25 @@ class CartItem {
         this._CartInstance.calcTotals()
     }
 
-
-
+    render(placeToRender) {
+        const cell = document.createElement('div')
+        cell.setAttribute('class', 'cart-item')
+        cell.innerHTML = `${this._productName} : ${this._price} x ${this._quantity}`
+        placeToRender.appendChild(cell)
+    }
 }
 
 
 class ProductList extends AbstractList {
 
-    constructor() {
+    _CartInstance = null
+
+    constructor(CartInstance) {
         super()
 
+        this._CartInstance = CartInstance
         this._checkoutPage(1)
     }
-
 
     _checkoutPage(page) {
         if (page <= this._totalPages && page > 0) {
@@ -88,11 +136,11 @@ class ProductList extends AbstractList {
     }
 
     _parseData(data) {
-        // console.log(data)
+
         this._totalPages = data.totalPages
         this._page = data.page
 
-        data._embedded.forEach(element => this._items[element.id] = new Product(element))
+        data._embedded.forEach(element => this._items[element.id] = new Product(this, element))
     }
 
     _json(response) {
@@ -108,8 +156,12 @@ class ProductList extends AbstractList {
             }
         }
 
-        return fetch(`http://localhost:40000/api/products/page${page}.json`, querySettings)
+        return fetch(`${this._dataHost}/api/products/page${page}.json`, querySettings)
             .then(this._json)
+    }
+
+    addItemToCart(ProductInstance) {
+        this._CartInstance.addItem(ProductInstance)
     }
 
     render() {
@@ -131,26 +183,9 @@ class ProductList extends AbstractList {
         const placeToRender = document.querySelector('.product-list')
 
         placeToRender.innerHTML = ''
-
-        let cell = ''
-
         for (let [k, v] of Object.entries(this._items)) {
-            // console.log(v)
-            cell +=
-                `<div class="product-item">
-                <img class="product-img-top" src="${v._img}" alt="">
-                <div class="product-block">
-                <h4 class="product-title">${v._name}</h4>
-                <p class="product-text">Цена: ${v._price}</p>
-                <a href="#" data-id="${k}" data-price="${v._price}" class="add_to_cart btn btn-primary">Добавить в корзину</a>
-                </div>
-                </div>`
+            v.render(placeToRender)
         }
-
-        const row = document.createElement('div')
-        row.innerHTML = cell
-        placeToRender.appendChild(row)
-
     }
 
 }
@@ -162,23 +197,38 @@ class Cart extends AbstractList {
         super()
 
         this._initTotals()
-        this.checkoutPage(0)
     }
 
+    addItem(ProductInstance) {
 
-    addItem(productInstance) {
+        const productId = ProductInstance.id()
 
+        let Item = this._items[productId]
+        if (Item == null) {
+            Item = new CartItem(this,
+                productId,
+                ProductInstance.name(),
+                ProductInstance.price())
+
+            this._items[productId] = Item
+        }
+        else {
+            Item._quantity += 1
+            Item._onChange()
+        }
+
+        this.calcTotals()
+
+        this.render()
     }
-
 
     removeItem(productInstance) {
-
     }
 
     _initTotals() {
-        _lineCount = 0
-        _quantity = 0
-        _amount = 0
+        this._lineCount = 0
+        this._quantity = 0
+        this._amount = 0
     }
 
     calcTotals() {
@@ -200,21 +250,37 @@ class Cart extends AbstractList {
         }
     }
 
-
     _fetchData() {
-        return [
-            { lineId: 1, productId: 1, price: 1000, quantity: 2, amount: 2000 },
-            { lineId: 2, productId: 2, price: 1050, quantity: 1, amount: 1050 }
-        ]
     }
-
 
     save() {
 
     }
+
+    render() {
+
+        const placeToRender = document.querySelector('.cart-list')
+        placeToRender.innerHTML = ''
+
+        if (this._items) {
+            const title = document.createElement('h4')
+            title.innerHTML = 'Ваша корзина'
+            placeToRender.appendChild(title)
+
+            for (let [k, v] of Object.entries(this._items)) {
+                v.render(placeToRender)
+            }
+
+            const totals = document.createElement('h4')
+            totals.innerHTML =
+                `Всего позиций ${this.totals().lineCount} на сумму ${this.totals().amount}`
+            placeToRender.appendChild(totals)
+        }
+    }
 }
 
+const cart = new Cart()
 
-let page = new ProductList()
-console.log(page)
+const productCatalog = new ProductList(cart)
+console.log(productCatalog)
 // page.render(placeToRender)
