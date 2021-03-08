@@ -1,98 +1,140 @@
-class FormField extends HTMLInputElement {
+class FormElement {
+    _inputField = null
+    _placeToRender = null
+    _type = ''
+    _id = ''
     _label = ''
-    // _placeToRender = null
+    _placeholder = ''
+    _required = true
+    _pattern = null
 
-    constructor(type, klass, id, label, placeholder, required) {
-        super()
-
-        this.class = klass
-        this.type = type
-        this.id = id
-        // this.setAttribute("placeholder", placeholder)
-        // this.setAttribute("required", required || true)
-
+    constructor(placeToRender, id, label, required) {
+        this._placeToRender = placeToRender
+        this._id = id
         this._label = label
-
-        // this.render()
+        this._required = required == false ? false : true
     }
 
-    render(placeToRender) {
-
+    _render() {
         const fieldBox = document.createElement('div')
         fieldBox.setAttribute('class', 'contact-form-box')
-        placeToRender.appendChild(fieldBox)
+        this._placeToRender.appendChild(fieldBox)
 
-        const fieldLabel = document.createElement('label');
-        fieldLabel.for = this.id;
-        fieldLabel.innerHTML = `${this._label}: <span style='color: red'>*</span> `;
-        fieldBox.appendChild(fieldLabel);
-        fieldBox.appendChild(this)
+        const fieldLabel = document.createElement('label')
+        fieldLabel.for = this._id
+        fieldLabel.innerHTML =
+            `${this._label}: ${this._required ? "<span style='color: red'>*</span>" : ""} `
+
+        fieldBox.appendChild(fieldLabel)
+
+        this._inputField = document.createElement("input")
+        this._inputField.type = this._type
+        this._inputField.id = this._id
+        this._inputField.placeholder = this._placeholder
+        this._inputField.required = this._required
+
+        if (this._pattern) {
+            this._inputField.pattern = this._pattern
+        }
+
+        fieldLabel.appendChild(this._inputField)
+
     }
 }
 
+class NameFormElement extends FormElement {
+
+    constructor(placeToRender, id, label, required) {
+        super(placeToRender, id, label, required)
+
+        this._placeholder = 'ФИО'
+        this._type = 'text'
+        this._pattern = '^[a-zA-Zа-яА-Я]+$'
+
+        this._render()
+    }
+}
+
+class EmailFormElement extends FormElement {
+
+    constructor(placeToRender, id, label, required) {
+        super(placeToRender, id, label, required)
+
+        this._placeholder = 'my_email@domain.com'
+        this._type = 'email'
+        this._pattern = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)$"
+
+        this._render()
+    }
+}
+
+class PhoneFormElement extends FormElement {
+
+    constructor(placeToRender, id, label, required) {
+        super(placeToRender, id, label, required)
+
+        this._placeholder = '+7(495)123-45-67'
+        this._type = 'tel'
+        this._pattern = "^\\+[0-9](\\(?)[0-9]{3}(\\)?)[0-9]{3}(-?)[0-9]{2}(-?)[0-9]{2}$"
+
+        this._render()
+    }
+}
+
+class TextAreaFormElement extends FormElement {
+    constructor(placeToRender, id, label, required) {
+        super(placeToRender, id, label, required)
+
+        this._type = 'textarea'
+        this._render()
+    }
+}
 
 class ContactForm {
 
-    _name = ''
-    _phone = ''
-    _email = ''
-    _message = ''
-
     constructor() {
-
+        this._render()
     }
 
-    validate() {
-
-    }
-
-
-    render() {
+    _render() {
         const placeToRender = document.querySelector('.contact-form-section')
-
-        console.log(placeToRender)
 
         if (placeToRender) {
             const contactForm = document.createElement('form')
             contactForm.setAttribute('class', 'contact-form')
             contactForm.setAttribute("method", "post");
-            // contactForm.setAttribute("action", "#"); 
             placeToRender.appendChild(contactForm)
 
-            const field = new FormField({
-                placeToRender: placeToRender,
-                type: 'text',
-                id: 'contact-name',
-                label: 'Представьтесь, пожалуйста',
-                placeholder: 'ФИО'
-            })
-            console.log(field)
+            new NameFormElement(
+                contactForm, 'contact-name', 'Представьтесь, пожалуйста')
 
-            // const nameField = document.createElement("input");
-            // inputField.setAttribute("type", type);
-            // inputField.setAttribute("id", id);
-            // inputField.setAttribute("placeholder", placeholder);
-            // inputField.maxLength = 5000;
-            // inputField.cols = 80;
-            // inputField.rows = 3;
-            // this._renderField(contactForm,
-            //     'text', 'contact-name', 'Представьтесь, пожалуйста', 'ФИО', true)
+            new EmailFormElement(
+                contactForm, 'contact-email', 'Email')
 
-            // this._renderField(contactForm,
-            //     'email', 'contact-email', 'Email', 'email', true)
+            new PhoneFormElement(
+                contactForm, 'contact-phone', 'Телефон')
 
-            // this._renderField(contactForm,
-            //     'tel', 'contact-phone', 'Телефон', 'телефон', true)
+            new TextAreaFormElement(
+                contactForm, 'contact-message', 'Сообщение', false)
 
-            // const message = this._renderField(contactForm,
-            //     'textarea', 'contact-message', 'Сообщение', '', false)
 
-            console.log(message)
+            const btns = document.createElement('div')
+            btns.setAttribute('class', 'contact-form-btns')
+            contactForm.appendChild(btns)
 
+            const btnSubmit = document.createElement('button')
+            btnSubmit.setAttribute('class', 'contact-submit-btn')
+            btnSubmit.setAttribute('type', 'submit')
+            btnSubmit.innerHTML = 'Отправить'
+            btns.appendChild(btnSubmit)
+
+            const info = document.createElement('div')
+            info.setAttribute('class', 'contact-form-info')
+            info.innerHTML = '<small>Поля со звездочкой <span style="color: red">*</span> обязательны к заполнению.</small>'
+            contactForm.appendChild(info)
         }
     }
 
 }
 
-const form = new ContactForm()
-form.render()
+new ContactForm()
