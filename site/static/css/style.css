@@ -1,0 +1,27 @@
+body {
+    padding-top: 80px;
+  }
+  
+  .btn-primary{
+     color: #fff;
+     background-color: #0275d8;
+     border-color: #0275d8; 
+  }
+  .product-list {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .product-item {
+    padding: 5px;
+  }
+
+  .product-title {
+    font-size: 1em;
+  }
+  
+  .product-img-top {
+    width: 200px;
+    height: 200px;
+    align-self: center;
+  }

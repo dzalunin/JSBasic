@@ -1,0 +1,20 @@
+{
+"page": 3,
+"totalPages": 3,
+"_embedded":
+	[
+		{
+			"id": 11,
+			"name": "Товар 11",
+			"price": 1000,
+			"img": "img/products_image_1.jpg"
+		},
+		{
+			"id": 12,
+			"name": "Товар 12",
+			"price": 1050,
+			"img": "img/products_image_1.jpg"
+		}
+
+	]
+}
