@@ -49,7 +49,7 @@ class NameFormElement extends FormElement {
 
         this._placeholder = 'ФИО'
         this._type = 'text'
-        this._pattern = '^[a-zA-Zа-яА-Я]+$'
+        this._pattern = '^[A-zА-яЁё]+$'
 
         this._render()
     }
@@ -62,7 +62,7 @@ class EmailFormElement extends FormElement {
 
         this._placeholder = 'my_email@domain.com'
         this._type = 'email'
-        this._pattern = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)$"
+        this._pattern = "^[A-z0-9._-]+@[A-z0-9-]+[A-z0-9-.]+$"
 
         this._render()
     }
@@ -75,7 +75,7 @@ class PhoneFormElement extends FormElement {
 
         this._placeholder = '+7(495)123-45-67'
         this._type = 'tel'
-        this._pattern = "^\\+[0-9](\\(?)[0-9]{3}(\\)?)[0-9]{3}(-?)[0-9]{2}(-?)[0-9]{2}$"
+        this._pattern = "^\\+[0-9]\\(?[0-9]{3}\\)?[0-9]{3}-?[0-9]{2}-?[0-9]{2}$"
 
         this._render()
     }
