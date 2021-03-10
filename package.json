@@ -4,11 +4,20 @@
     "description": "js http server",
     "main": "server.js",
     "dependencies": {
+        "@babel/core": "^7.13.10",
+        "babel": "^6.23.0",
+        "babel-loader": "^8.2.2",
         "npm": "^6.14.11"
     },
-    "devDependencies": {},
+    "devDependencies": {
+        "webpack": "^5.24.4",
+        "webpack-cli": "^4.5.0",
+        "webpack-dev-server": "^3.11.2"
+    },
     "scripts": {
-        "test": "ping"
+        "test": "ping",
+        "build": "webpack",
+        "dev": "webpack serve --hot --config webpack.dev.config.js"
     },
     "repository": {
         "type": "git",
