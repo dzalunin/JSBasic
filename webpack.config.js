@@ -1,5 +1,6 @@
 
 const path = require('path')
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 module.exports = {
     // Переопределяем точку входа
@@ -11,6 +12,12 @@ module.exports = {
         filename: 'main.js' // имя файла
     },
 
+    resolve: {
+        alias: {
+            vue: 'vue/dist/vue.js',
+        },
+    },
+
     // Загрузчики
     module: {
         rules: [
@@ -20,8 +27,19 @@ module.exports = {
                     { loader: 'babel-loader' }
                 ]
             },
-
+            {
+                test: /\.vue$/,
+                use: [
+                    { loader: 'vue-loader' }
+                ]
+            }
         ]
-    }
+    },
+
+    // Подключенные плагины
+    plugins: [
+        new VueLoaderPlugin()
+    ]
+
 
 }
