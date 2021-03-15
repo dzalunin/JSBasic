@@ -31,7 +31,8 @@ const productsStore = {
                 }
             }
 
-            fetch(`http://localhost:40000/api/products/page${page}.json`, querySettings)
+            fetch(`/api/products/page${page}.json`, querySettings)
+                // fetch(`http://localhost:40000/api/products/page${page}.json`, querySettings)
                 .then(response => {
                     return response.json()
                 })
@@ -72,6 +73,10 @@ const cartStore = {
             else {
                 item.quantity += 1
                 item.amount = item.quantity * item.price
+
+                // Для обновления элемента корзины реактивно требуется поменять ссылку 
+                // в памяти.
+                state.data = { ...state.data }
             }
             console.log(item)
         }
