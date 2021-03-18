@@ -66,6 +66,6 @@ server.post('/api/cart/item', (req, res) => {
 });
 
 
-server.listen(40000, () => {
+server.listen(process.env.PORT || 40000, () => {
     console.log('Server started');
 });
