@@ -1,10 +1,22 @@
 'use strict'
 
-import Cart from './cart'
-import ProductList from './productList'
+import Vue from 'vue';
+import App from './App.vue';
+import store from './store/index.js';
 
-const cart = new Cart()
+new Vue({
+    el: 'main',
+    template: '<App />',
+    components: {
+        App,
+    },
+    store,
+})
+// import Cart from './cart'
+// import ProductList from './productList'
 
-const productCatalog = new ProductList(cart)
-console.log(productCatalog)
+// const cart = new Cart()
+
+// const productCatalog = new ProductList(cart)
+// console.log(productCatalog)
 
