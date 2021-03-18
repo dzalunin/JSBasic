@@ -4,12 +4,12 @@
     <img :src="itemData.img" :alt="itemData.name" class="product-img-top" />
     <p class="product-title">{{ itemData.name }}</p>
     <p class="product-text">{{ itemData.price }}</p>
-    <button @click="addToCart" class="btn-primary">Добавить в корзину</button>
+    <button @click="buyProduct" class="btn-primary">Добавить в корзину</button>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   // Входные параметры, передаваемые из родительский компонент
@@ -20,8 +20,10 @@ export default {
 
   // Методы, которые будут подмешаны к экземпляру Vue.
   methods: {
-    addToCart() {
-      this.$store.commit("cart/addToCart", this.itemData);
+    ...mapActions("cart", ["addToCart"]),
+    buyProduct() {
+      this.addToCart(this.itemData);
+      //   this.$store.commit("cart/addToCart", this.itemData);
     },
   },
 

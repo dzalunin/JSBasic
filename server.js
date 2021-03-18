@@ -1,67 +1,71 @@
 "Use strict"
 
-const http = require('http')
 const fs = require('fs')
-const url = require('url');
-
-const settings = {
-    "index": "index.html",
-    "appName": "site",
-    "static": "static"
-}
+const express = require('express');
+const bodyParser = require('body-parser');
 
 
+const server = express()
+server.use(express.static('./site'))
+server.use(express.static('./site/static'))
+server.use(bodyParser.json())
 
-const pathOnServer = function (httpRequest) {
+server.get('/api/products', (req, res) => {
+    const page = req.query.page || 1;
 
-    let path = url.parse(httpRequest.url).pathname
+    fs.readFile(`./api/products/page${page}.json`, 'utf8', (err, data) => {
+        res.send(data);
+    });
+});
 
-    // console.log(path)
-    // Имитация ответа на запрос к rest api 
-    if (path.startsWith('/api')) {
-        return `.${path}`
-    }
+server.delete('/api/cart', (req, res) => {
+    const db = `./api/cart/cart.json`
 
-    const acceptPriority = httpRequest.headers.accept.split(';')
+    fs.writeFile(db, JSON.stringify({}), (err) => {
+        res.send("Ok");
+    })
+})
 
-    path = path === '/' ? (`/${settings.index}`) : (path)
-    if (acceptPriority.lenth == 0 || acceptPriority[0].indexOf('text/html') >= 0) {
-        return `./${settings.appName}${path}`
-    }
+server.get('/api/cart', (req, res) => {
+    const db = `./api/cart/cart.json`
 
-    return `./${settings.appName}/${settings.static}${path}`
-}
+    fs.readFile(db, 'utf8', (err, data) => {
+        res.send(data || {});
+    });
+})
+
+server.post('/api/cart/item', (req, res) => {
+    const db = `./api/cart/cart.json`
+    // console.log(req.body)
+
+    fs.readFile(db, 'utf8', (err, data) => {
+        // if (err) throw err
+        const cart = JSON.parse(data || {});
+        const product = req.body;
+
+        let item = cart[product.id]
+        if (item == null) {
+            item = {
+                productId: product.id,
+                productName: product.name,
+                quantity: 1,
+                price: product.price,
+                amount: product.price
+            }
+            cart[product.id] = item
+        }
+        else {
+            item.quantity += 1
+            item.amount = item.quantity * item.price
+        }
+
+        fs.writeFile(db, JSON.stringify(cart), (err) => {
+            res.send(cart);
+        })
+    });
+});
 
 
-const queryProsessor = function (httpRequest, httpResponse) {
-    const path = pathOnServer(httpRequest)
-
-    let contentType = 'text/html'
-
-    const accept = httpRequest.headers.accept.split(';')
-    if (accept || accept.lenth != 0) {
-        contentType = accept[0].split(',')[0]
-    }
-
-    const headers = {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "OPTIONS, POST, GET",
-        "Access-Control-Max-Age": 2592000, // 30 days
-        "Content-Type": contentType
-    };
-
-    try {
-        httpResponse.writeHead(200, headers);
-        httpResponse.end(fs.readFileSync(path))
-    } catch (error) {
-        console.log(`File not found ${path}`)
-        console.log(error)
-
-        httpResponse.writeHead(404, { 'Content-Type': 'text/plain' })
-        httpResponse.end('404 - Page not found.')
-    }
-}
-
-
-const srv = http.createServer(queryProsessor)
-srv.listen(process.env.PORT || 40000)
+server.listen(40000, () => {
+    console.log('Server started');
+});

@@ -31,8 +31,7 @@ const productsStore = {
                 }
             }
 
-            fetch(`/api/products/page${page}.json`, querySettings)
-                // fetch(`http://localhost:40000/api/products/page${page}.json`, querySettings)
+            fetch(`/api/products`, querySettings)
                 .then(response => {
                     return response.json()
                 })
@@ -55,38 +54,70 @@ const cartStore = {
         list: [],
     }),
     mutations: {
-        addToCart(state, payload) {
-            const productId = payload.id
-
-            let item = state.data[productId]
-            if (item == null) {
-                item = {
-                    productId: productId,
-                    productName: payload.name,
-                    quantity: 1,
-                    price: payload.price,
-                    amount: payload.price
-                }
-                state.data[productId] = item
-                state.list.push(productId)
+        setData(state, payload) {
+            state.list = []
+            state.data = payload
+            for (let v of Object.values(payload)) {
+                state.list.push(v.productId)
             }
-            else {
-                item.quantity += 1
-                item.amount = item.quantity * item.price
-
-                // Для обновления элемента корзины реактивно требуется поменять ссылку 
-                // в памяти.
-                state.data = { ...state.data }
-            }
-            console.log(item)
         }
+    },
+    actions: {
+        getCart({ commit, state }) {
+            const querySettings = {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json;charset=utf-8'
+                }
+            }
+            fetch(`/api/cart`, querySettings)
+                .then(response => {
+                    return response.json()
+                })
+                .then(body => {
+                    commit('setData', body)
+                })
+        },
+
+        addToCart({ commit, state }, data) {
+            const querySettings = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify(data)
+            }
+            fetch('/api/cart/item', querySettings)
+                .then(response => {
+                    return response.json()
+                })
+                .then(body => {
+                    commit('setData', body)
+                })
+                .catch(e => {
+                    console.log(e)
+                })
+        },
+        initCart({ commit, state }) {
+            const querySettings = {
+                method: 'DELETE',
+            }
+            fetch('/api/cart', querySettings)
+                .then(() => {
+                    commit('setData', {})
+                })
+                .catch(e => {
+                    console.log(e)
+                })
+        }
+
+
     },
     getters: {
         data: state => state.data,
         list: state => state.list,
     }
 }
-
 
 export default new Vuex.Store({
     modules: {
